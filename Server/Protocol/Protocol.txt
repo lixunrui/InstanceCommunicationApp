@@ -1,0 +1,5 @@
+﻿Message Header:
+	From ID
+	To ID
+	Data Length
+
