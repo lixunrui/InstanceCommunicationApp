@@ -80,7 +80,7 @@ namespace Server
             MessageHeader header;
             int _clientID = 0 ;
 
-            while (!_serverEvent.WaitOne(200))
+            while (!_serverEvent.WaitOne(200) && (_clientSocket != null))
             {
                 try
                 {
@@ -133,7 +133,7 @@ namespace Server
                 {
                     Console.WriteLine(ex.Message);
                     _clientSocket.Close();
-
+                    _clientSocket = null;
                     Client c = isClientExist(_clientID);
                     if (c != null)
                     {

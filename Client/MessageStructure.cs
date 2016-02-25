@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Server
+namespace ClientApplication
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal struct MessageHeader
@@ -50,6 +50,41 @@ namespace Server
             header.msgSize = reader.ReadInt32();
           
             return header;
+        }
+    }
+
+    internal class Message
+    {
+        int _msgFrom;
+
+        public int MsgFrom
+        {
+            get { return _msgFrom; }
+            set { _msgFrom = value; }
+        }
+
+        int _msgTo;
+
+        public int MsgTo
+        {
+            get { return _msgTo; }
+            set { _msgTo = value; }
+        }
+
+        DateTime _receivedTime;
+
+        public DateTime ReceivedTime
+        {
+            get { return _receivedTime; }
+            set { _receivedTime = value; }
+        }
+
+        string _transmitMsg;
+
+        public string TransmitMsg
+        {
+            get { return _transmitMsg; }
+            set { _transmitMsg = value; }
         }
     }
 

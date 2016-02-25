@@ -1,8 +1,47 @@
-﻿<Window x:Class="Client.MainWindow"
+﻿<Window x:Class="ClientApplication.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
         
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="0.8*"/>
+            <RowDefinition Height="0.8*"/>
+            <RowDefinition Height="0.6*"/>
+        </Grid.RowDefinitions>
+        <WrapPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" >
+            <TextBlock Text="Logon ID: " MinWidth="60px"/>
+            <TextBox Text="1" Name="txtID" MinWidth="120px" />
+            <Label Name="lblIDError"/>
+        </WrapPanel>
+
+        <WrapPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" >
+            <TextBlock Text="Password: " />
+            <PasswordBox Password="123" Name="txtPWD" MinWidth="120px"/>
+            <Label Name="lblPWDError"/>
+        </WrapPanel>
+        <Button Content="Logon"  Grid.Row="0" Grid.Column="2" Height="30px" Width="90px" VerticalAlignment="Bottom" Click="Btn_Logon_Clicked"/>
+        
+        <!--<RichTextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" BorderThickness="2" BorderBrush="AliceBlue" Margin="3"
+                     Name="txtChatsBox" IsReadOnly="True"/>-->
+        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="3" 
+                   Name="txtChatsBox"/>
+        
+        <TextBox Name="txtChar" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="3" BorderBrush="Aqua" Background="AliceBlue"/>
+
+        <Button Name="btnExit" Grid.Row="3" Grid.Column="0" Margin="3" Content="Exit" Width="90px" HorizontalAlignment="Left" Click="Btn_Exit_Clicked"/>
+       
+        <TextBox Name="txtTo" Grid.Row="3" Grid.Column="1" Text="1" FontSize="15" />
+        
+        <Button Name="btnSend" Grid.Row="3" Grid.Column="2" Margin="3" Content="Send" Width="90px" Click="Btn_Send_Clicked"/>
+        <Label Name="lblStatus" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0" FontSize="15" Content=""
+               VerticalAlignment="Center"/>
     </Grid>
 </Window>

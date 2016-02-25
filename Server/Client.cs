@@ -51,16 +51,18 @@ namespace Server
                     try
                     {
                         // for debug we send message back
-                        if (CheckTargetClientExist(message.MsgFrom))
+                        if (CheckTargetClientExist(message.MsgTo))
                         {
                             SendMessage(message);
                             outgoingMessageQueue.Dequeue();
+                            Console.WriteLine("Total message in queue:{0}", outgoingMessageQueue.Count);
                         }
                     }
                     catch (System.Exception ex)
                     {
                     }
                 }
+                Thread.Sleep(200);
                // else
                    // Console.WriteLine("No Message to be transmitted");
             }
