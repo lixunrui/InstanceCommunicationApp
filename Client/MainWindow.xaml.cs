@@ -49,7 +49,8 @@ namespace ClientApplication
 
                     paragraph.Inlines.Add(msg.TransmitMsg);
 
-                    UpdateChatBox(msg.TransmitMsg);
+                    string newMsg = "Terminal " + msg.MsgFrom.ToString() + ": ";
+                    UpdateChatBox(newMsg + msg.TransmitMsg);
 
                     break;
             }
@@ -72,13 +73,13 @@ namespace ClientApplication
 
         private void Btn_Send_Clicked(object sender, RoutedEventArgs e)
         {
-            _client.SendMessage(Convert.ToInt32(txtID.Text), txtChar.Text);
+            _client.SendMessage(Convert.ToInt32(txtTo.Text), txtChar.Text);
           //  Paragraph paragraph = new Paragraph();
            // paragraph.Foreground = Brushes.Black;
 
           //  paragraph.Inlines.Add(txtChar.Text.ToString());
-
-            UpdateChatBox(txtChar.Text);
+            string message = "Terminal " + _client.ClientID +": ";
+            UpdateChatBox(message + txtChar.Text);
         }
 
         private void Btn_Exit_Clicked(object sender, RoutedEventArgs e)
@@ -115,5 +116,11 @@ namespace ClientApplication
             }));
         }
         #endregion
+
+        private void Window_Close(object sender, EventArgs e)
+        {
+            _client.Close();
+            this.Close();
+        }
     }
 }

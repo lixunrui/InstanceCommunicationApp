@@ -1,7 +1,7 @@
 ﻿<Window x:Class="ClientApplication.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525" Closed="Window_Close">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
@@ -31,15 +31,19 @@
         
         <!--<RichTextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" BorderThickness="2" BorderBrush="AliceBlue" Margin="3"
                      Name="txtChatsBox" IsReadOnly="True"/>-->
-        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="3" 
+
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+            <TextBlock  Margin="3" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"
                    Name="txtChatsBox"/>
+        </ScrollViewer>
         
         <TextBox Name="txtChar" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="3" BorderBrush="Aqua" Background="AliceBlue"/>
 
         <Button Name="btnExit" Grid.Row="3" Grid.Column="0" Margin="3" Content="Exit" Width="90px" HorizontalAlignment="Left" Click="Btn_Exit_Clicked"/>
-       
-        <TextBox Name="txtTo" Grid.Row="3" Grid.Column="1" Text="1" FontSize="15" />
+
         
+
+        <TextBox Name="txtTo"  Grid.Row="3" Grid.Column="1" Text="1" FontSize="15" />
         <Button Name="btnSend" Grid.Row="3" Grid.Column="2" Margin="3" Content="Send" Width="90px" Click="Btn_Send_Clicked"/>
         <Label Name="lblStatus" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0" FontSize="15" Content=""
                VerticalAlignment="Center"/>

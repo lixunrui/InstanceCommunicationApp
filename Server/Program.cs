@@ -17,23 +17,23 @@ namespace Server
             InitializeServer();
             StartServer();
             RunOtherTask();
-
+            Console.ReadKey();
         }
 
         private static void RunOtherTask()
         {
-            
-                Console.WriteLine("Enter ESC to exit app");
+            Console.WriteLine("Enter ESC to exit app");
 
-                ConsoleKeyInfo keyInfo = Console.ReadKey();
+            ConsoleKeyInfo keyInfo = Console.ReadKey();
 
-                if (keyInfo.Key == ConsoleKey.Escape)
-                {
-                    _serverEvent.Set();
-                }
+            if (keyInfo.Key == ConsoleKey.Escape)
+            {
+                //_serverEvent.WaitOne();
+                EndServer();
+                
+            }
            
-            //_serverEvent.WaitOne();
-            EndServer();
+            
         }
 
         private static void EndServer()
@@ -42,10 +42,9 @@ namespace Server
             {
                 if (serverThread.IsAlive)
                 {
+                    _serverEvent.Set();
                     Console.WriteLine("Stop the Server");
                     serverThread.Join(3000);
-                  //  serverThread.Abort();
-
                     Console.WriteLine("Server Stopped");
                 }
             }

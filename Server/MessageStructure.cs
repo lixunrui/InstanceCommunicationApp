@@ -51,6 +51,17 @@ namespace Server
           
             return header;
         }
+
+        internal static bool CheckHeaderValid(MessageHeader header)
+        {
+            // both from and to id should not be zero
+            if (header.msgFromID == 0 || header.msgToID == 0)
+            {
+                Console.WriteLine("Invalid Header From {0}, To {1}, drop off", header.msgFromID, header.msgToID);
+                return false;
+            }
+            return true;
+        }
     }
 
     internal class Message

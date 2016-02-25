@@ -114,9 +114,13 @@ namespace ClientApplication
             byte[] outBytes;
             SendHeader(message, out outBytes);
 
-            workStream.Write(outBytes, 0, outBytes.Length);
+            if (outBytes.Length > 0)
+            {
+                workStream.Write(outBytes, 0, outBytes.Length);
+            }
 
             workStream.Flush();
+            Console.WriteLine("Message Sent");
         }
 
         private void SendHeader(Message message, out byte[] outBytes)
@@ -127,6 +131,7 @@ namespace ClientApplication
                 msgToID = message.MsgTo
             };
 
+            outBytes = new byte[10240];
             outBytes = Encoding.ASCII.GetBytes(message.TransmitMsg);
 
             header.msgSize = outBytes.Length;
@@ -136,8 +141,28 @@ namespace ClientApplication
 
         internal void Close()
         {
-            workStream.Close();
-            clientTcp.Close();
+            if (listener != null)
+            {
+                if (listener.IsAlive)
+                {
+                    Console.WriteLine("Stop the Listener thread...");
+                    listener.Join();
+                }
+            }
+            
+            if (workStream != null)
+            {
+                Console.WriteLine("Stop the Sending stream");
+                workStream.Close();
+                workStream = null;
+            }
+            
+            if (clientTcp != null)
+            {
+                Console.WriteLine("Stop the Tcp Client");
+                clientTcp.Close();
+                clientTcp = null;
+            }
         }
     }
 }

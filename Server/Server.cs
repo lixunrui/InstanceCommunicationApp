@@ -55,16 +55,31 @@ namespace Server
                 Console.WriteLine("Server Started");
             }
 
-            while (!_serverEvent.WaitOne(500))
+            Thread listenClientConnectionThread = new Thread(()=> StartListening());
+
+            listenClientConnectionThread.Start();
+
+            _serverEvent.WaitOne();
+
+            if (_serverListener != null)
+            {
+                _serverListener.Stop();
+                listenClientConnectionThread.Abort(); 
+            }
+
+            Console.WriteLine("Server Thread Ends");
+        }
+
+        private void StartListening()
+        {
+            while (true)
             {
                 try
                 {
                     _clientSocket = _serverListener.AcceptTcpClient();
                     Console.WriteLine("Received connecting request.");
-                    //Client _client = new Client(_clientSocket, _serverEvent);
-                 // should check if the client is valid
-                   // clientList.Add(_client);
-                    Thread clientHandleThread = new Thread(() => ClientHandler());
+
+                    Thread clientHandleThread = new Thread(() => ClientHandler(_clientSocket));
                     clientHandleThread.Start();
                 }
                 catch (System.Exception ex)
@@ -73,29 +88,34 @@ namespace Server
             }
         }
 
-        private void ClientHandler()
+        private void ClientHandler(TcpClient mySocket)
         {
             byte[] receivedBytes;
 
             MessageHeader header;
             int _clientID = 0 ;
 
-            while (!_serverEvent.WaitOne(200) && (_clientSocket != null))
+            while (!_serverEvent.WaitOne(200) && (mySocket != null))
             {
                 try
                 {
                     receivedBytes = new byte[10025];
 
-                    NetworkStream stream = _clientSocket.GetStream();
+                    NetworkStream stream = mySocket.GetStream();
                     stream.Read(receivedBytes, 0, Utility.HeaderSize);
 
                     header = Utility.GetStructFromBytes(receivedBytes);
 
-                    if (_clientID == 0)
+                    // workaround
+                    if (!Utility.CheckHeaderValid(header))
                     {
-                        _clientID = header.msgFromID;
+                        if (header.msgFromID == 0)
+                        {
+                            throw new Exception();
+                        }
+                        continue;
                     }
-                    else
+                    if (_clientID != header.msgFromID)
                     {
                         Console.WriteLine("Client ID changed from {0} to {1}", _clientID, header.msgFromID);
                         _clientID = header.msgFromID;
@@ -111,7 +131,11 @@ namespace Server
                         c.MyServer = this;
                         c.MyStream = stream;
                         clientList.Add(c);
+                        Console.WriteLine("Client List added {0}", c.ClientID);
                     }
+
+                    if (header.msgSize == 0)
+                        continue;
 
                     stream.Read(receivedBytes, 0, header.msgSize);
                     string data = Encoding.ASCII.GetString(receivedBytes);
@@ -132,8 +156,8 @@ namespace Server
                 catch (System.Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    _clientSocket.Close();
-                    _clientSocket = null;
+                    mySocket.Close();
+                    mySocket = null;
                     Client c = isClientExist(_clientID);
                     if (c != null)
                     {
@@ -142,7 +166,9 @@ namespace Server
                     }
                 }
                 
-            }
+            }// while
+
+            Console.WriteLine("Server Listener Ends");
         }
 
         private Client isClientExist(int _clientID)

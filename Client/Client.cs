@@ -88,6 +88,15 @@ namespace ClientApplication
             if (_transmitter.ConenctToServer())
             {
                 _clientID = clientID;
+
+                // send server a message indicate online
+                _transmitter.TransmitMessage(new Message()
+                {
+                    MsgFrom = clientID,
+                    MsgTo = -1,
+                    TransmitMsg=""
+                });
+
                 sendQueue = new Queue<Message>();
 
                 sendMessageThread = new Thread(() => TransmitMessage());
@@ -125,6 +134,14 @@ namespace ClientApplication
 
         internal void Close()
         {
+            if (sendMessageThread!=null)
+            {
+                if (sendMessageThread.IsAlive)
+                {
+                    sendMessageThread.Join();
+                }   
+            }
+            
             _transmitter.Close();
         }
     }

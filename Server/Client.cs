@@ -46,16 +46,22 @@ namespace Server
             {
                 if (outgoingMessageQueue.Count != 0)
                 {
-                    Message message = outgoingMessageQueue.Peek();
+                    Message message = outgoingMessageQueue.Dequeue();
 
                     try
                     {
                         // for debug we send message back
-                        if (CheckTargetClientExist(message.MsgTo))
+                        Client targetClient = CheckTargetClientExist(message.MsgTo);
+                        if (targetClient != null)
                         {
-                            SendMessage(message);
-                            outgoingMessageQueue.Dequeue();
+                            SendMessage(message, targetClient);
+                            
                             Console.WriteLine("Total message in queue:{0}", outgoingMessageQueue.Count);
+                        }
+                        else
+                        {
+                            Console.WriteLine("No Receiver, restore the mssage:{0}", message.TransmitMsg);
+                            outgoingMessageQueue.Enqueue(message);
                         }
                     }
                     catch (System.Exception ex)
@@ -68,18 +74,18 @@ namespace Server
             }
         }
 
-        private bool CheckTargetClientExist(int targetClientID)
+        private Client CheckTargetClientExist(int targetClientID)
         {
             Client targetClient = Server.clientList.Find(c => c.ClientID == targetClientID);
 
             if (targetClient != null)
             {
-                return true;
+                return targetClient;
             }
-            return false;
+            return null;
         }
 
-        private void SendMessage(Message msg)
+        private void SendMessage(Message msg, Client targetClient)
         {
             lock (MyStream)
             {
@@ -94,11 +100,11 @@ namespace Server
 
                 byte[] headerStream = Utility.GetBytesFromStruct(header);
                 // transmit header
-                MyStream.Write(headerStream, 0, headerStream.Length);
+                targetClient.MyStream.Write(headerStream, 0, headerStream.Length);
 
-                MyStream.Write(outStream, 0, outStream.Length);
+                targetClient.MyStream.Write(outStream, 0, outStream.Length);
 
-                MyStream.Flush();
+                targetClient.MyStream.Flush();
             }
         }
 
