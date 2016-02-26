@@ -35,10 +35,10 @@
         <!--<RichTextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" BorderThickness="2" BorderBrush="AliceBlue" Margin="3"
                      Name="txtChatsBox" IsReadOnly="True"/>-->
 
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" >
             <!--<TextBlock  Margin="3" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"
                    Name="txtChatsBox"/>-->
-            <StackPanel Name="chatPanel">
+            <StackPanel Name="chatPanel" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
                 
             </StackPanel>
         </ScrollViewer>

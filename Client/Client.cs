@@ -34,12 +34,15 @@ namespace ClientApplication
 
         Thread sendMessageThread;
 
+        ManualResetEvent _clientClosedEvent;
+
         internal delegate void ClientEventDelegate(object sender, EventType Type, object response);
 
         internal event ClientEventDelegate ClientEvent;
 
-        internal Client(AutoResetEvent clientClosedEvent) 
+        internal Client(ManualResetEvent clientClosedEvent) 
         {
+            _clientClosedEvent = clientClosedEvent;
             sendQueue = new Queue<Message>();
             _transmitter = new ClientApplication.Transmitter(clientClosedEvent);
             _transmitter.ServerEvent += ServerEventHandler;
@@ -48,7 +51,7 @@ namespace ClientApplication
 
         private void TransmitMessage()
         {
-            while (true)
+            while (!_clientClosedEvent.WaitOne(1))
             {
                 if (sendQueue.Count > 0)
                 {

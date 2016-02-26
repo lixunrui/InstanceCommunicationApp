@@ -18,9 +18,9 @@ namespace ClientApplication
 
         internal event ServerkEventDelegate InternalEvent;
         Thread listener;
-        AutoResetEvent _clientClosedEvent;
+        ManualResetEvent _clientClosedEvent;
 
-        internal Transmitter(AutoResetEvent clientClosedEvent)
+        internal Transmitter(ManualResetEvent clientClosedEvent)
         {
             _clientClosedEvent = clientClosedEvent;
             clientTcp = new TcpClient();
@@ -71,20 +71,13 @@ namespace ClientApplication
         {
             Thread readThread = new Thread(()=>ReadNetWork());
             readThread.Name = "read";
-            readThread.Start();
-
-            _clientClosedEvent.WaitOne();
-
-            if(workStream != null)
-                workStream.Close();
-            readThread.Abort();
-            
+            readThread.Start();         
         }
 
         private void ReadNetWork()
         {
             MessageHeader header;
-            while (true)
+            while (!_clientClosedEvent.WaitOne(1))
             {
                 try
                 {

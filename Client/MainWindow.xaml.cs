@@ -22,12 +22,12 @@ namespace ClientApplication
     {
         Client _client;
         FlowDocument chatsDocs;
-        AutoResetEvent clientClosedEvent ;
+        ManualResetEvent clientClosedEvent ;
 
         public MainWindow()
         {
             InitializeComponent();
-            clientClosedEvent = new AutoResetEvent(false);
+            clientClosedEvent = new ManualResetEvent(false);
             chatsDocs = new FlowDocument();
             _client = new Client(clientClosedEvent);
             _client.ClientEvent += _client_ClientEvent;
