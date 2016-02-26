@@ -16,6 +16,7 @@
             <RowDefinition Height="0.8*"/>
             <RowDefinition Height="0.6*"/>
         </Grid.RowDefinitions>
+        
         <WrapPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" >
             <TextBlock Text="Logon ID: " MinWidth="60px"/>
             <TextBox Text="1" Name="txtID" MinWidth="120px" />
@@ -23,8 +24,10 @@
         </WrapPanel>
 
         <WrapPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" >
-            <TextBlock Text="Password: " />
-            <PasswordBox Password="123" Name="txtPWD" MinWidth="120px"/>
+            <!--<TextBlock Text="Password: " />
+            <PasswordBox Password="123" Name="txtPWD" MinWidth="120px"/>-->
+            <TextBlock Text="Server: " MinWidth="60px"/>
+            <TextBox Text="127.0.0.1" Name="txtServer" MinWidth="120px" />
             <Label Name="lblPWDError"/>
         </WrapPanel>
         <Button Content="Logon"  Grid.Row="0" Grid.Column="2" Height="30px" Width="90px" VerticalAlignment="Bottom" Click="Btn_Logon_Clicked"/>
@@ -33,8 +36,11 @@
                      Name="txtChatsBox" IsReadOnly="True"/>-->
 
         <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
-            <TextBlock  Margin="3" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"
-                   Name="txtChatsBox"/>
+            <!--<TextBlock  Margin="3" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                   Name="txtChatsBox"/>-->
+            <StackPanel Name="chatPanel">
+                
+            </StackPanel>
         </ScrollViewer>
         
         <TextBox Name="txtChar" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="3" BorderBrush="Aqua" Background="AliceBlue"/>

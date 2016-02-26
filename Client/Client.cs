@@ -38,9 +38,10 @@ namespace ClientApplication
 
         internal event ClientEventDelegate ClientEvent;
 
-        internal Client() 
+        internal Client(AutoResetEvent clientClosedEvent) 
         {
-            _transmitter = new ClientApplication.Transmitter();
+            sendQueue = new Queue<Message>();
+            _transmitter = new ClientApplication.Transmitter(clientClosedEvent);
             _transmitter.ServerEvent += ServerEventHandler;
             _transmitter.InternalEvent += InternalEventHandler;
         }
@@ -85,7 +86,7 @@ namespace ClientApplication
 
         internal bool ConnectToServer(int clientID, string serverIP, int port, string password)
         {
-            if (_transmitter.ConenctToServer())
+            if (_transmitter.ConenctToServer(serverIP))
             {
                 _clientID = clientID;
 
@@ -96,8 +97,6 @@ namespace ClientApplication
                     MsgTo = -1,
                     TransmitMsg=""
                 });
-
-                sendQueue = new Queue<Message>();
 
                 sendMessageThread = new Thread(() => TransmitMessage());
                 sendMessageThread.Name = "Hello";
@@ -117,20 +116,6 @@ namespace ClientApplication
                 TransmitMsg = message
             });
         }
-
-        //internal void ReceivedMessage(Message message)
-        //{
-        //    if (message.MsgTo != _clientID)
-        //    {
-        //        return;
-        //    }
-
-        //    if (ClientEvent != null)
-        //    {
-        //        ClientEvent(this, EventType.ServerEvent, message);
-        //    }
-        //}
-
 
         internal void Close()
         {

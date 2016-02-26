@@ -18,21 +18,22 @@ namespace ClientApplication
 
         internal event ServerkEventDelegate InternalEvent;
         Thread listener;
+        AutoResetEvent _clientClosedEvent;
 
-
-        internal Transmitter()
+        internal Transmitter(AutoResetEvent clientClosedEvent)
         {
+            _clientClosedEvent = clientClosedEvent;
             clientTcp = new TcpClient();
             //Thread 
         }
 
-        internal bool ConenctToServer()
+        internal bool ConenctToServer(string ip)
         {
             try
             {
                 TransmitInternalEvent("Connecting to server...");
 
-                clientTcp.Connect("127.0.0.1", 60000);
+                clientTcp.Connect(ip, 60000);
 
                 workStream = clientTcp.GetStream();
 
@@ -61,23 +62,38 @@ namespace ClientApplication
         private void BeginMonitorNetwork()
         {
             listener = new Thread(()=>ListenNetWork());
-            listener.Name = "WOrld";
+            listener.Name = "Listener";
+            //listener.SetApartmentState(ApartmentState.STA);
             listener.Start();
         }
 
         private void ListenNetWork()
+        {
+            Thread readThread = new Thread(()=>ReadNetWork());
+            readThread.Name = "read";
+            readThread.Start();
+
+            _clientClosedEvent.WaitOne();
+
+            if(workStream != null)
+                workStream.Close();
+            readThread.Abort();
+            
+        }
+
+        private void ReadNetWork()
         {
             MessageHeader header;
             while (true)
             {
                 try
                 {
-                	byte[] receivedBytes = new byte[10240];
+                    byte[] receivedBytes = new byte[10240];
 
                     workStream.Read(receivedBytes, 0, Utility.HeaderSize);
 
                     header = Utility.GetStructFromBytes(receivedBytes);
-                    
+
                     workStream.Read(receivedBytes, 0, header.msgSize);
 
                     string data = Encoding.ASCII.GetString(receivedBytes);

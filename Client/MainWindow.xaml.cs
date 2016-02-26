@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,18 +20,18 @@ namespace ClientApplication
     /// </summary>
     public partial class MainWindow : Window
     {
-        int _clientID;
-        string _clientPassword;
-        string _chatContent;
         Client _client;
         FlowDocument chatsDocs;
+        AutoResetEvent clientClosedEvent ;
 
         public MainWindow()
         {
             InitializeComponent();
+            clientClosedEvent = new AutoResetEvent(false);
             chatsDocs = new FlowDocument();
-            _client = new Client();
+            _client = new Client(clientClosedEvent);
             _client.ClientEvent += _client_ClientEvent;
+            
         }
 
         void _client_ClientEvent(object sender, EventType Type, object response)
@@ -50,7 +51,7 @@ namespace ClientApplication
                     paragraph.Inlines.Add(msg.TransmitMsg);
 
                     string newMsg = "Terminal " + msg.MsgFrom.ToString() + ": ";
-                    UpdateChatBox(newMsg + msg.TransmitMsg);
+                    UpdateChatBox(newMsg + msg.TransmitMsg, msg.ReceivedTime, ClientApplication.HorizontalAlignment.HorizontalLeft);
 
                     break;
             }
@@ -61,10 +62,9 @@ namespace ClientApplication
         #region Button Events
         private void Btn_Logon_Clicked(object sender, RoutedEventArgs e)
         {
-
             try
             {
-                _client.ConnectToServer(Convert.ToInt32(txtID.Text), "127.0.0.1", 60000, "none");
+                _client.ConnectToServer(Convert.ToInt32(txtID.Text), txtServer.Text, 60000, "none");
             }
             catch (System.Exception ex)
             {
@@ -79,11 +79,14 @@ namespace ClientApplication
 
           //  paragraph.Inlines.Add(txtChar.Text.ToString());
             string message = "Terminal " + _client.ClientID +": ";
-            UpdateChatBox(message + txtChar.Text);
+            UpdateChatBox(message + txtChar.Text, DateTime.Now);
+
+            txtChar.Text = "";
         }
 
         private void Btn_Exit_Clicked(object sender, RoutedEventArgs e)
         {
+            clientClosedEvent.Set();
             _client.Close();
         }
 
@@ -96,29 +99,21 @@ namespace ClientApplication
             }));
         }
 
-        //private void UpdateChatBox(Paragraph paragraph)
-        //{
-        //    this.Dispatcher.BeginInvoke((Action)(() =>
-        //    {
-        //        // paragraph.Inlines.Add(new LineBreak());
-
-        //        chatsDocs.Blocks.Add(paragraph);
-
-        //        txtChatsBox.Document = chatsDocs;
-        //    }));
-        //}
-
-        private void UpdateChatBox(string paragraph)
+        private void UpdateChatBox(string paragraph, DateTime logTime,
+            HorizontalAlignment alignment = ClientApplication.HorizontalAlignment.HorizontalRight
+            )
         {
             this.Dispatcher.BeginInvoke((Action)(() =>
             {
-                txtChatsBox.Text += paragraph + "\n";
+                ChatBox cBox = new ChatBox(paragraph, logTime, alignment);
+                chatPanel.Children.Add(cBox.txtBlock);
             }));
         }
         #endregion
 
         private void Window_Close(object sender, EventArgs e)
         {
+            clientClosedEvent.Set();
             _client.Close();
             this.Close();
         }
